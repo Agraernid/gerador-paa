@@ -300,7 +300,7 @@
 
     let contadorProdutos = 0;
 
-    function toggleDeclarante() {
+        function toggleDeclarante() {
         const checkbox = document.getElementById('declarante_terceiro');
         const campo = document.getElementById('campo_declarante');
         if (checkbox.checked) {
@@ -308,6 +308,9 @@
         } else {
             campo.classList.add('hidden');
             document.getElementById('nome_declarante').value = '';
+            document.getElementById('rg_declarante').value = '';
+            document.getElementById('cpf_declarante').value = '';
+            document.getElementById('endereco_declarante').value = '';
         }
     }
 
