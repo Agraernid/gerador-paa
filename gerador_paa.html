@@ -50,17 +50,14 @@
         
         .barra-acoes { text-align: center; margin: 20px 0; padding: 15px; background: #ecf0f1; border-radius: 8px; }
 
-        /* ===== REGRAS EXCLUSIVAS PARA IMPRESSÃO ===== */
         @media print {
-            /* Esconde tudo que não é o anexo */
             body { background: white; margin: 0; padding: 0; }
             .container { box-shadow: none; margin: 0; padding: 0; max-width: 100%; border-radius: 0; }
-            #formulario { display: none !important; } /* Esconde o formulário de cadastro */
-            h1, p { display: none !important; } /* Esconde títulos e instruções do topo */
-            .barra-acoes { display: none !important; } /* Esconde os botões de ação */
+            #formulario { display: none !important; }
+            h1, p { display: none !important; }
+            .barra-acoes { display: none !important; }
             .print-area { margin: 0; padding: 0; border: none; }
             
-            /* Ajusta o Anexo para o tamanho A4 */
             .anexo {
                 page-break-after: always;
                 border: 1px solid black;
@@ -73,16 +70,10 @@
                 text-align: justify;
             }
             
-            /* Evita que o último anexo crie uma página em branco no final */
-            .anexo:last-child {
-                page-break-after: auto;
-            }
+            .anexo:last-child { page-break-after: auto; }
         }
         
-        @page {
-            size: A4;
-            margin: 0;
-        }
+        @page { size: A4; margin: 0; }
     </style>
 </head>
 <body>
@@ -107,6 +98,10 @@
             <div class="form-group">
                 <label>RG/RANI:</label>
                 <input type="text" id="rg" placeholder="0000000">
+            </div>
+            <div class="form-group">
+                <label>Estado Civil:</label>
+                <input type="text" id="estado_civil" placeholder="Ex: Casado(a), Solteiro(a)">
             </div>
             <div class="form-group">
                 <label>Nº DAP/CAF:</label>
@@ -271,6 +266,12 @@
 
     let contadorProdutos = 0;
 
+    function formatarDataAtual() {
+        const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+        const hoje = new Date();
+        return `${hoje.getDate()} de ${meses[hoje.getMonth()]} de ${hoje.getFullYear()}`;
+    }
+
     function adicionarProduto() {
         contadorProdutos++;
         const container = document.getElementById('lista-produtos');
@@ -350,6 +351,7 @@
             nome: document.getElementById('nome').value || "_________________________",
             cpf: document.getElementById('cpf').value || "_________________________",
             rg: document.getElementById('rg').value || "_________________________",
+            estado_civil: document.getElementById('estado_civil').value || "_________________________",
             dap: document.getElementById('dap').value || "_________________________",
             nis: document.getElementById('nis').value || "_________________________",
             endereco: document.getElementById('endereco').value || "_________________________",
@@ -358,6 +360,8 @@
             telefone: document.getElementById('telefone').value || "_________________________",
             inscricao_estadual: document.getElementById('inscricao_estadual').value || "_________________________"
         };
+
+        const dataAtual = formatarDataAtual();
 
         const produtos = [];
         const itens = document.querySelectorAll('.produto-item');
@@ -385,20 +389,22 @@
 
         let htmlAnexos = '';
 
+        // ANEXO I
         htmlAnexos += `
             <div class="anexo">
                 <h3>ANEXO I - DECLARAÇÃO DE PRODUÇÃO PRÓPRIA PARA AGRICULTOR(A) FAMILIAR INDIVIDUAL</h3>
                 <p>Edital de Chamamento Público SEMADESC/PAA/CDS nº. 003/2026.</p>
                 <p>DECLARAÇÃO DE QUE OS GÊNEROS ALIMENTÍCIOS A SEREM ENTREGUES SÃO ORIUNDOS DE PRODUÇÃO PRÓPRIA, RELACIONADOS NO PROJETO DE VENDA.</p>
                 <br>
-                <p>Eu, <strong>${dados.nome}</strong>, nacionalidade brasileira, estado civil ________________, Agricultor Familiar, portador(a) do RG/RANI n.º <strong>${dados.rg}</strong> e do CPF n.º <strong>${dados.cpf}</strong>, residente e domiciliado em <strong>${dados.endereco}, ${dados.municipio} - MS</strong>, DECLARO, para fins de participação no Chamamento Público de Credenciamento de Agricultores Familiares SEMADESC/PAA/CDS n.º 003/2026 para aquisição de gêneros alimentícios da agricultura familiar, no âmbito do Programa de Aquisição de Alimentos – Modalidade Compra com Doação Simultânea – com dispensa de licitação para doação a pessoas e famílias em situação de vulnerabilidade social, que os gêneros alimentícios relacionados na Proposta de Venda em meu nome são oriundos de produção própria.</p>
+                <p>Eu, <strong>${dados.nome}</strong>, nacionalidade brasileira, estado civil <strong>${dados.estado_civil}</strong>, Agricultor Familiar, portador(a) do RG/RANI n.º <strong>${dados.rg}</strong> e do CPF n.º <strong>${dados.cpf}</strong>, residente e domiciliado em <strong>${dados.endereco}, ${dados.municipio} - MS</strong>, DECLARO, para fins de participação no Chamamento Público de Credenciamento de Agricultores Familiares SEMADESC/PAA/CDS n.º 003/2026 para aquisição de gêneros alimentícios da agricultura familiar, no âmbito do Programa de Aquisição de Alimentos – Modalidade Compra com Doação Simultânea – com dispensa de licitação para doação a pessoas e famílias em situação de vulnerabilidade social, que os gêneros alimentícios relacionados na Proposta de Venda em meu nome são oriundos de produção própria.</p>
                 <p>Declaro, ainda, estar ciente de que as Notas Fiscais Eletrônicas de Produtor a serem emitidas pela minha Inscrição Estadual, destinam-se exclusivamente à comercialização de minha própria produção, sendo vedada a cessão a terceiros.</p>
                 <br>
-                <p style="text-align: center;">Município de ${dados.municipio}/MS, _____ de _____________ de 2026.</p>
+                <p style="text-align: center;">Município de ${dados.municipio}/MS, ${dataAtual}.</p>
                 <div class="assinatura"><div>Assinatura e Nome do agricultor(a)<br>Número do CPF</div></div>
             </div>
         `;
 
+        // ANEXO II
         htmlAnexos += `
             <div class="anexo">
                 <h3>ANEXO II - DECLARAÇÃO DE RESPONSABILIDADE PELO CONTROLE DO ATENDIMENTO DO LIMITE INDIVIDUAL DE VENDA</h3>
@@ -406,11 +412,12 @@
                 <br>
                 <p>Eu, <strong>${dados.nome}</strong>, nacionalidade brasileira, Agricultor(a) Familiar, portador(a) do CPF n.º <strong>${dados.cpf}</strong>, residente e domiciliado (a) na área rural, denominada <strong>${dados.endereco}, ${dados.municipio} - MS</strong>, para fins de participação no Chamamento Público de Credenciamento de Agricultores Familiares SEMADESC n.º 003/2026 para aquisição de gêneros alimentícios da agricultura familiar, no âmbito do Programa de Aquisição de Alimentos – Modalidade Compra com Doação Simultânea – com dispensa de licitação, DECLARO que me responsabilizarei pelo controle do limite individual de venda anual de gêneros alimentícios, em até no valor de R$ 15.000,00 (quinze mil reais) por unidade familiar/CAF/modalidade PAA-CDS Termo de adesão, conforme Resolução GGPAA nº 3, de 5 de setembro de 2023 e demais normativos, no que couber.</p>
                 <br>
-                <p style="text-align: center;">Município de ${dados.municipio}/MS, _____ de _____________ de 2026.</p>
+                <p style="text-align: center;">Município de ${dados.municipio}/MS, ${dataAtual}.</p>
                 <div class="assinatura"><div>Assinatura e Nome do agricultor(a)<br>Número do CPF</div></div>
             </div>
         `;
 
+        // ANEXO III
         let linhasProdutos = '';
         produtos.forEach(p => {
             linhasProdutos += `<tr><td>${p.nome}</td><td>${p.unidade}</td><td>${p.quantidade}</td><td>R$ ${p.preco}</td><td>R$ ${p.total}</td><td>${p.periodicidade}</td></tr>`;
@@ -425,8 +432,13 @@
                 <br>
                 <h4>I – IDENTIFICAÇÃO DO FORNECEDOR</h4>
                 <p>1. Nome do agricultor/a: <strong>${dados.nome}</strong></p>
-                <p>2. CPF: <strong>${dados.cpf}</strong> | 3. Nº da DAP/CAF: <strong>${dados.dap}</strong> | 4. Nº NIS: <strong>${dados.nis}</strong></p>
-                <p>5. Endereço: <strong>${dados.endereco}</strong> | 6. Município: <strong>${dados.municipio}</strong> | 7. CEP: <strong>${dados.cep}</strong> | 8. DDD/Fone: <strong>${dados.telefone}</strong></p>
+                <p>2. CPF: <strong>${dados.cpf}</strong></p>
+                <p>3. Nº da DAP/CAF: <strong>${dados.dap}</strong></p>
+                <p>4. Nº NIS: <strong>${dados.nis}</strong></p>
+                <p>5. Endereço: <strong>${dados.endereco}</strong></p>
+                <p>6. Município: <strong>${dados.municipio}</strong></p>
+                <p>7. CEP: <strong>${dados.cep}</strong></p>
+                <p>8. DDD/Fone: <strong>${dados.telefone}</strong></p>
                 <br>
                 <h4>II – PRODUTO</h4>
                 <table>
@@ -434,17 +446,18 @@
                     <tbody>${linhasProdutos}</tbody>
                 </table>
                 <br>
-                <p style="text-align: center;">Município de ${dados.municipio}/MS, _____ de _____________ de 2026.</p>
+                <p style="text-align: center;">Município de ${dados.municipio}/MS, ${dataAtual}.</p>
                 <div class="assinatura"><div>Assinatura e Nome do agricultor(a)<br>Número do CPF</div></div>
             </div>
         `;
 
+        // ANEXO V
         htmlAnexos += `
             <div class="anexo">
                 <h3>ANEXO V – DECLARAÇÃO DE RESIDÊNCIA</h3>
                 <p>Eu, <strong>${dados.nome}</strong>, portador(a) do RG/RANI nº <strong>${dados.rg}</strong>, inscrito(a) no CPF/CNPJ sob o nº <strong>${dados.cpf}</strong>, residente e domiciliado em <strong>${dados.endereco}, ${dados.municipio} - MS</strong>, DECLARO, para fins de participação no CHAMAMENTO PÚBLICO DA SEMADESC PAA/CDS Nº 003/2026, para aquisição de gêneros alimentícios da agricultura familiar, no âmbito do Programa de Aquisição de Alimentos – Modalidade Compra com Doação Simultânea – com dispensa de licitação, para doação a pessoas e famílias em situação de vulnerabilidade social, sob as penas da lei (Art. 299 do Código Penal Brasileiro e Lei nº 7.115/1983), que o(a) Sr.(a) <strong>${dados.nome}</strong>, inscrito no CPF sob o nº <strong>${dados.cpf}</strong>, detentor da Inscrição Estadual nº <strong>${dados.inscricao_estadual}</strong> e DAP/CAF ou NIS nº <strong>${dados.dap}</strong>, reside de forma efetiva e contínua no endereço, <strong>${dados.endereco}, ${dados.municipio} - MS</strong>, conforme comprovante em meu nome.</p>
                 <br>
-                <p style="text-align: center;">Município de ${dados.municipio}/MS, _____ de _____________ de 2026.</p>
+                <p style="text-align: center;">Município de ${dados.municipio}/MS, ${dataAtual}.</p>
                 <div class="assinatura"><div>Assinatura e Nome do Declarante<br>Número do CPF</div></div>
             </div>
         `;
