@@ -331,12 +331,30 @@
         inputTotal.value = (qtd * preco).toFixed(2).replace('.', ',');
     }
 
-    function limparTudo() {
+        function limparTudo() {
         if (confirm("Tem certeza que deseja limpar todos os dados preenchidos?")) {
-            document.getElementById('formulario').reset();
+            // Limpa cada campo do formulário manualmente
+            document.getElementById('nome').value = '';
+            document.getElementById('cpf').value = '';
+            document.getElementById('rg').value = '';
+            document.getElementById('estado_civil').value = '';
+            document.getElementById('dap').value = '';
+            document.getElementById('nis').value = '';
+            document.getElementById('endereco').value = '';
+            document.getElementById('municipio').value = '';
+            document.getElementById('cep').value = '';
+            document.getElementById('telefone').value = '';
+            document.getElementById('inscricao_estadual').value = '';
+            
+            // Limpa a lista de produtos
             document.getElementById('lista-produtos').innerHTML = '';
             contadorProdutos = 0;
+            
+            // Volta para a tela do formulário
             voltarParaFormulario();
+            
+            // Avisa o usuário
+            alert("Todos os dados foram limpos com sucesso!");
         }
     }
 
