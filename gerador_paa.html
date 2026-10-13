@@ -541,9 +541,16 @@
                 <p>8. DDD/Fone: <strong>${dados.telefone}</strong></p>
                 <br>
                 <h4>II – PRODUTO</h4>
-                <table>
+                                <table>
                     <thead><tr><th>1. Produto</th><th>2. Unidade</th><th>3. Quantidade</th><th>4. Preço</th><th>5. Total</th><th>6. Periodicidade</th></tr></thead>
-                    <tbody>${linhasProdutos}</tbody>
+                    <tbody>
+                        ${linhasProdutos}
+                        <tr>
+                            <td colspan="4" style="text-align: right; font-weight: bold;">TOTAL GERAL:</td>
+                            <td style="font-weight: bold;">R$ ${totalGeralFormatado}</td>
+                            <td></td>
+                        </tr>
+                    </tbody>
                 </table>
                 <br>
                 <p style="text-align: center;">Município de <strong>${dados.municipio}</strong>/MS, ${dataAtual}.</p>
