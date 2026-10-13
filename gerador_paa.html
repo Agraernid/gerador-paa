@@ -514,12 +514,18 @@
             </div>
         `;
 
-        // ANEXO III
+                // ANEXO III
         let linhasProdutos = '';
+        let somaTotal = 0;
         produtos.forEach(p => {
+            // Converte o preço formatado (ex: "9,17") para número
+            const totalNum = parseFloat(p.total.replace(/\./g, '').replace(',', '.'));
+            somaTotal += totalNum;
             linhasProdutos += `<tr><td>${p.nome}</td><td>${p.unidade}</td><td>${p.quantidade}</td><td>R$ ${p.preco}</td><td>R$ ${p.total}</td><td>${p.periodicidade}</td></tr>`;
         });
 
+        // Formata o total geral como moeda brasileira
+        const totalGeralFormatado = somaTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         htmlAnexos += `
             <div class="anexo">
                 <h3>ANEXO III – PROJETO DE VENDA</h3>
