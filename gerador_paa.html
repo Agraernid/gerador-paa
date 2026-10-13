@@ -549,11 +549,11 @@
         let blocoAssinaturaDeclarante = '';
         let blocoAssinaturaAgricultor = '';
 
-        if (declaranteTerceiro) {
-            blocoDeclarante = `<strong>${dados.nome_declarante}</strong>, portador(a) do RG/RANI nº __________________, inscrito(a) no CPF/CNPJ sob o nº __________________, residente e domiciliado em __________________`;
+                if (declaranteTerceiro) {
+            blocoDeclarante = `<strong>${dados.nome_declarante}</strong>, portador(a) do RG/RANI nº <strong>${dados.rg_declarante}</strong>, inscrito(a) no CPF/CNPJ sob o nº <strong>${dados.cpf_declarante}</strong>, residente e domiciliado em <strong>${dados.endereco_declarante}</strong>`;
             blocoAssinaturaDeclarante = `
                 <div class="assinatura">
-                    <div>Assinatura e Nome do Declarante: ${dados.nome_declarante}<br>Número do CPF: __________________</div>
+                    <div>Assinatura e Nome do Declarante: ${dados.nome_declarante}<br>Número do CPF: ${dados.cpf_declarante}</div>
                 </div>
             `;
         } else {
