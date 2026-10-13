@@ -54,7 +54,7 @@
             body { background: white; margin: 0; padding: 0; }
             .container { box-shadow: none; margin: 0; padding: 0; max-width: 100%; border-radius: 0; }
             #formulario { display: none !important; }
-            h1, p { display: none !important; }
+            .no-print { display: none !important; }
             .barra-acoes { display: none !important; }
             .print-area { margin: 0; padding: 0; border: none; }
             
@@ -79,8 +79,8 @@
 <body>
 
 <div class="container">
-    <h1>Gerador de Anexos - PAA/CDS 2026</h1>
-    <p>Preencha os dados abaixo e clique em <strong>Gerar Anexos</strong> para visualizar os formulários prontos para impressão.</p>
+    <h1 class="no-print">Gerador de Anexos - PAA/CDS 2026</h1>
+    <p class="no-print">Preencha os dados abaixo e clique em <strong>Gerar Anexos</strong> para visualizar os formulários prontos para impressão.</p>
 
     <div id="formulario">
         <h2>1. Dados do Agricultor</h2>
