@@ -26,7 +26,6 @@
         .print-area { margin-top: 30px; border-top: 2px dashed #ccc; padding-top: 20px; }
         .anexo { 
             page-break-after: always; 
-            border: 1px solid #000; 
             padding: 20px; 
             margin-bottom: 20px; 
             font-size: 12px; 
@@ -37,8 +36,9 @@
         .anexo table { width: 100%; border-collapse: collapse; margin-top: 10px; text-align: left; }
         .anexo table, .anexo th, .anexo td { border: 1px solid black; }
         .anexo th, .anexo td { padding: 5px; }
-        .anexo .assinatura { margin-top: 50px; text-align: center; }
+        .anexo .assinatura { margin-top: 40px; text-align: center; }
         .anexo .assinatura div { border-top: 1px solid black; width: 300px; margin: 0 auto; padding-top: 5px; }
+        .anexo .assinatura + .assinatura { margin-top: 30px; }
         
         .produto-item { display: grid; grid-template-columns: 3fr 1fr 1fr 1fr 1fr 1fr 0.5fr; gap: 8px; align-items: end; margin-bottom: 10px; padding: 10px; background: #eee; border-radius: 4px; }
         .produto-item label { font-size: 11px; margin-bottom: 3px; }
@@ -46,9 +46,11 @@
         .produto-item button { background-color: #e74c3c; padding: 6px 10px; font-size: 12px; margin: 0; height: 33px; }
         .produto-item .readonly { background: #ddd; color: #555; }
         
-        .header-produtos { display: grid; grid-template-columns: 3fr 1fr 1fr 1fr 1fr 1fr 0.5fr; gap: 8px; font-weight: bold; font-size: 12px; padding: 0 10px; margin-bottom: 5px; }
-        
         .barra-acoes { text-align: center; margin: 20px 0; padding: 15px; background: #ecf0f1; border-radius: 8px; }
+
+        .caixa-declarante { background: #fffbe6; padding: 15px; border-radius: 6px; border: 1px dashed #f1c40f; margin-top: 10px; }
+        .caixa-declarante label { display: inline-flex; align-items: center; gap: 8px; font-weight: bold; cursor: pointer; }
+        .caixa-declarante input[type="checkbox"] { width: auto; margin: 0; }
 
         @media print {
             body { background: white; margin: 0; padding: 0; }
@@ -58,9 +60,8 @@
             .barra-acoes { display: none !important; }
             .print-area { margin: 0; padding: 0; border: none; }
             
-                        .anexo {
+            .anexo {
                 page-break-after: always;
-                border: none;
                 padding: 15mm;
                 margin: 0;
                 width: 100%;
@@ -68,6 +69,12 @@
                 box-sizing: border-box;
                 font-size: 11pt;
                 text-align: justify;
+                display: block !important;
+            }
+            
+            .anexo p {
+                display: block !important;
+                margin: 5px 0;
             }
             
             .anexo:last-child { page-break-after: auto; }
@@ -137,8 +144,29 @@
             </div>
         </div>
 
-        <h2>2. Produtos (Projeto de Venda)</h2>
-            
+        <h2>2. Tipo de Preço</h2>
+        <div class="form-group">
+            <label>Escolha o tipo de preço que será usado neste projeto:</label>
+            <select id="tipo_preco">
+                <option value="convencional">Convencional</option>
+                <option value="organico">Orgânico</option>
+            </select>
+        </div>
+
+        <h2>3. Declaração de Residência (Anexo V)</h2>
+        <div class="caixa-declarante">
+            <label>
+                <input type="checkbox" id="declarante_terceiro" onchange="toggleDeclarante()">
+                A Declaração de Residência será feita por um TERCEIRO (não o próprio agricultor)
+            </label>
+            <div id="campo_declarante" class="hidden" style="margin-top: 10px;">
+                <label>Nome do Declarante (Terceiro):</label>
+                <input type="text" id="nome_declarante" placeholder="Ex: Maria Souza (Técnica da Agraer)">
+            </div>
+        </div>
+
+        <h2>4. Produtos (Projeto de Venda)</h2>
+        
         <div id="lista-produtos"></div>
         
         <button type="button" onclick="adicionarProduto()">+ Adicionar Produto</button>
@@ -159,102 +187,113 @@
 
 <script>
     const tabelaPrecos = [
-        { produto: "ABACATE", unidade: "Kg", convencional: 9.17 },
-        { produto: "ABACAXI, Havaí", unidade: "Kg", convencional: 11.51 },
-        { produto: "ABACAXI, Pérola", unidade: "Kg", convencional: 10.69 },
-        { produto: "ABÓBORA, Cabotiá", unidade: "Kg", convencional: 3.95 },
-        { produto: "ABÓBORA, Moranga", unidade: "Kg", convencional: 4.40 },
-        { produto: "ABÓBORA, Paulista", unidade: "Kg", convencional: 5.04 },
-        { produto: "ABOBRINHA, Verde", unidade: "Kg", convencional: 6.88 },
-        { produto: "ABOBRINHA, Italiana", unidade: "Kg", convencional: 6.88 },
-        { produto: "ACELGA", unidade: "Kg", convencional: 11.75 },
-        { produto: "ACEROLA", unidade: "Kg", convencional: 8.71 },
-        { produto: "AGRIÃO", unidade: "Kg", convencional: 21.75 },
-        { produto: "ALFACE, Americana/Crespa/Lisa", unidade: "Kg", convencional: 13.91 },
-        { produto: "ALMEIRÃO", unidade: "Kg", convencional: 12.92 },
-        { produto: "BANANA, da terra", unidade: "Kg", convencional: 12.40 },
-        { produto: "BANANA, Maçã", unidade: "Kg", convencional: 13.54 },
-        { produto: "BANANA, Nanica", unidade: "Kg", convencional: 6.65 },
-        { produto: "BANANA, Prata", unidade: "Kg", convencional: 9.00 },
-        { produto: "BATATA, Doce", unidade: "Kg", convencional: 4.46 },
-        { produto: "BERINJELA", unidade: "Kg", convencional: 6.75 },
-        { produto: "BETERRABA", unidade: "Kg", convencional: 5.26 },
-        { produto: "BRÓCOLIS", unidade: "Kg", convencional: 19.80 },
-        { produto: "CARÁ", unidade: "Kg", convencional: 13.45 },
-        { produto: "CAXI", unidade: "Kg", convencional: 5.44 },
-        { produto: "CEBOLINHA, Verde", unidade: "Kg", convencional: 16.91 },
-        { produto: "CENOURA", unidade: "Kg", convencional: 5.94 },
-        { produto: "CHICHÓRIA", unidade: "Kg", convencional: 10.35 },
-        { produto: "CHUCHU", unidade: "Kg", convencional: 5.47 },
-        { produto: "COENTRO", unidade: "Kg", convencional: 15.23 },
-        { produto: "COUVE, Folha", unidade: "Kg", convencional: 13.10 },
-        { produto: "COUVE-FLOR", unidade: "Kg", convencional: 18.01 },
-        { produto: "ESPINAFRE", unidade: "Kg", convencional: 14.72 },
-        { produto: "GOIABA VERMELHA", unidade: "Kg", convencional: 11.14 },
-        { produto: "INHAME", unidade: "Kg", convencional: 13.78 },
-        { produto: "JILÓ", unidade: "Kg", convencional: 11.97 },
-        { produto: "LARANJA, Lima", unidade: "Kg", convencional: 10.98 },
-        { produto: "LARANJA, Pera", unidade: "Kg", convencional: 5.85 },
-        { produto: "LIMÃO, Rosa", unidade: "Kg", convencional: 7.10 },
-        { produto: "LIMÃO, Taiti", unidade: "Kg", convencional: 5.86 },
-        { produto: "MAMÃO, Formosa", unidade: "Kg", convencional: 8.76 },
-        { produto: "MAMÃO, Papaia", unidade: "Kg", convencional: 11.09 },
-        { produto: "MANGA, Haden/Tommy", unidade: "Kg", convencional: 7.61 },
-        { produto: "MARACUJÁ, Azedo", unidade: "Kg", convencional: 17.06 },
-        { produto: "MAXIXE", unidade: "Kg", convencional: 10.58 },
-        { produto: "MELANCIA", unidade: "Kg", convencional: 3.02 },
-        { produto: "MELÃO, Caipira/Espanhol", unidade: "Kg", convencional: 6.90 },
-        { produto: "MILHO VERDE, em Espiga", unidade: "Kg", convencional: 10.80 },
-        { produto: "MORANGO", unidade: "Kg", convencional: 29.62 },
-        { produto: "PEPINO, Comum/Japonês", unidade: "Kg", convencional: 6.98 },
-        { produto: "PIMENTÃO, Verde", unidade: "Kg", convencional: 9.45 },
-        { produto: "QUIABO", unidade: "Kg", convencional: 13.66 },
-        { produto: "RABANETE", unidade: "Kg", convencional: 10.55 },
-        { produto: "RAIZ DE MANDIOCA, com Casca", unidade: "Kg", convencional: 4.92 },
-        { produto: "REPOLHO, Verde", unidade: "Kg", convencional: 3.71 },
-        { produto: "REPOLHO, Roxo", unidade: "Kg", convencional: 7.26 },
-        { produto: "RÚCULA", unidade: "Kg", convencional: 19.34 },
-        { produto: "SALSA", unidade: "Kg", convencional: 18.98 },
-        { produto: "SALSÃO", unidade: "Kg", convencional: 15.09 },
-        { produto: "TANGERINA, Morgote/Ponkan", unidade: "Kg", convencional: 9.39 },
-        { produto: "TOMATE, Cereja", unidade: "Kg", convencional: 20.68 },
-        { produto: "TOMATE, Salada", unidade: "Kg", convencional: 8.76 },
-        { produto: "UVA", unidade: "Kg", convencional: 21.50 },
-        { produto: "VAGEM", unidade: "Kg", convencional: 17.67 },
-        { produto: "BEBIDA LÁCTEA", unidade: "L", convencional: 6.64 },
-        { produto: "BOLACHA, caseira de Polvilho", unidade: "Kg", convencional: 46.35 },
-        { produto: "BOLACHA, Enriquecida", unidade: "Kg", convencional: 24.00 },
-        { produto: "BOLACHA, Tipo Rosquinha", unidade: "Kg", convencional: 24.52 },
-        { produto: "CARNE, de Frango semi caipira", unidade: "Kg", convencional: 32.40 },
-        { produto: "CARNE, de Peixe / Catfish/ Surubim", unidade: "Kg", convencional: 30.90 },
-        { produto: "CARNE, de Peixe Pacu inteiro", unidade: "Kg", convencional: 28.20 },
-        { produto: "CARNE, de Peixe tilápia", unidade: "Kg", convencional: 38.47 },
-        { produto: "CARNE, Filé de tilápia", unidade: "Kg", convencional: 53.30 },
-        { produto: "DOCE, de Abóbora", unidade: "Kg", convencional: 25.66 },
-        { produto: "DOCE, de Frutas", unidade: "Kg", convencional: 28.45 },
-        { produto: "DOCE, de Leite", unidade: "Kg", convencional: 28.01 },
-        { produto: "FARINHA DE MANDIOCA", unidade: "Kg", convencional: 14.02 },
-        { produto: "FEIJÃO, Caupi", unidade: "Kg", convencional: 13.43 },
-        { produto: "FEIJÃO, Cores, Tipo 1", unidade: "Kg", convencional: 7.75 },
-        { produto: "IOGURTE", unidade: "L", convencional: 12.12 },
-        { produto: "LEITE, de vaca, líquido, integral, pasteurizado, tipo C", unidade: "L", convencional: 5.60 },
-        { produto: "MEL, de Abelha", unidade: "Kg", convencional: 46.17 },
-        { produto: "MELADO", unidade: "Kg", convencional: 26.90 },
-        { produto: "OVO, de galinha", unidade: "Dúzia", convencional: 12.33 },
-        { produto: "PÃO, de Trigo", unidade: "Kg", convencional: 20.61 },
-        { produto: "PÃO, Enriquecido", unidade: "Kg", convencional: 27.03 },
-        { produto: "POLPA DE FRUTAS, Caju", unidade: "Kg", convencional: 31.42 },
-        { produto: "POLPA DE FRUTAS, Maracujá", unidade: "Kg", convencional: 54.35 },
-        { produto: "QUEIJO, Colonial / Caipira", unidade: "Kg", convencional: 32.90 },
-        { produto: "QUEIJO Minas frescal", unidade: "Kg", convencional: 50.67 },
-        { produto: "QUEIJO, Mussarela", unidade: "Kg", convencional: 54.28 },
-        { produto: "QUEIJO Padrão", unidade: "Kg", convencional: 70.24 },
-        { produto: "RAPADURA, Enriquecida", unidade: "Kg", convencional: 24.74 },
-        { produto: "RAIZ DE MANDIOCA, Descascada", unidade: "Kg", convencional: 8.96 },
-        { produto: "RAPADURA, Pura de Cana", unidade: "Kg", convencional: 22.18 }
+        { produto: "ABACATE", unidade: "Kg", convencional: 9.17, organico: 11.92 },
+        { produto: "ABACAXI, Havaí", unidade: "Kg", convencional: 11.51, organico: 14.96 },
+        { produto: "ABACAXI, Pérola", unidade: "Kg", convencional: 10.69, organico: 13.90 },
+        { produto: "ABÓBORA, Cabotiá", unidade: "Kg", convencional: 3.95, organico: 5.14 },
+        { produto: "ABÓBORA, Moranga", unidade: "Kg", convencional: 4.40, organico: 5.72 },
+        { produto: "ABÓBORA, Paulista", unidade: "Kg", convencional: 5.04, organico: 6.55 },
+        { produto: "ABOBRINHA, Verde", unidade: "Kg", convencional: 6.88, organico: 8.94 },
+        { produto: "ABOBRINHA, Italiana", unidade: "Kg", convencional: 6.88, organico: 8.94 },
+        { produto: "ACELGA", unidade: "Kg", convencional: 11.75, organico: 15.28 },
+        { produto: "ACEROLA", unidade: "Kg", convencional: 8.71, organico: 11.32 },
+        { produto: "AGRIÃO", unidade: "Kg", convencional: 21.75, organico: 28.28 },
+        { produto: "ALFACE, Americana/Crespa/Lisa", unidade: "Kg", convencional: 13.91, organico: 18.08 },
+        { produto: "ALMEIRÃO", unidade: "Kg", convencional: 12.92, organico: 16.80 },
+        { produto: "BANANA, da terra", unidade: "Kg", convencional: 12.40, organico: 16.12 },
+        { produto: "BANANA, Maçã", unidade: "Kg", convencional: 13.54, organico: 17.60 },
+        { produto: "BANANA, Nanica", unidade: "Kg", convencional: 6.65, organico: 8.65 },
+        { produto: "BANANA, Prata", unidade: "Kg", convencional: 9.00, organico: 11.70 },
+        { produto: "BATATA, Doce", unidade: "Kg", convencional: 4.46, organico: 5.80 },
+        { produto: "BERINJELA", unidade: "Kg", convencional: 6.75, organico: 8.78 },
+        { produto: "BETERRABA", unidade: "Kg", convencional: 5.26, organico: 6.84 },
+        { produto: "BRÓCOLIS", unidade: "Kg", convencional: 19.80, organico: 25.74 },
+        { produto: "CARÁ", unidade: "Kg", convencional: 13.45, organico: 17.49 },
+        { produto: "CAXI", unidade: "Kg", convencional: 5.44, organico: 7.07 },
+        { produto: "CEBOLINHA, Verde", unidade: "Kg", convencional: 16.91, organico: 21.98 },
+        { produto: "CENOURA", unidade: "Kg", convencional: 5.94, organico: 7.72 },
+        { produto: "CHICHÓRIA", unidade: "Kg", convencional: 10.35, organico: 13.46 },
+        { produto: "CHUCHU", unidade: "Kg", convencional: 5.47, organico: 7.11 },
+        { produto: "COENTRO", unidade: "Kg", convencional: 15.23, organico: 19.80 },
+        { produto: "COUVE, Folha", unidade: "Kg", convencional: 13.10, organico: 17.03 },
+        { produto: "COUVE-FLOR", unidade: "Kg", convencional: 18.01, organico: 23.41 },
+        { produto: "ESPINAFRE", unidade: "Kg", convencional: 14.72, organico: 19.14 },
+        { produto: "GOIABA VERMELHA", unidade: "Kg", convencional: 11.14, organico: 14.48 },
+        { produto: "INHAME", unidade: "Kg", convencional: 13.78, organico: 17.91 },
+        { produto: "JILÓ", unidade: "Kg", convencional: 11.97, organico: 15.56 },
+        { produto: "LARANJA, Lima", unidade: "Kg", convencional: 10.98, organico: 14.27 },
+        { produto: "LARANJA, Pera", unidade: "Kg", convencional: 5.85, organico: 7.61 },
+        { produto: "LIMÃO, Rosa", unidade: "Kg", convencional: 7.10, organico: 9.23 },
+        { produto: "LIMÃO, Taiti", unidade: "Kg", convencional: 5.86, organico: 7.62 },
+        { produto: "MAMÃO, Formosa", unidade: "Kg", convencional: 8.76, organico: 11.39 },
+        { produto: "MAMÃO, Papaia", unidade: "Kg", convencional: 11.09, organico: 14.42 },
+        { produto: "MANGA, Haden/Tommy", unidade: "Kg", convencional: 7.61, organico: 9.89 },
+        { produto: "MARACUJÁ, Azedo", unidade: "Kg", convencional: 17.06, organico: 22.18 },
+        { produto: "MAXIXE", unidade: "Kg", convencional: 10.58, organico: 13.75 },
+        { produto: "MELANCIA", unidade: "Kg", convencional: 3.02, organico: 3.93 },
+        { produto: "MELÃO, Caipira/Espanhol", unidade: "Kg", convencional: 6.90, organico: 8.97 },
+        { produto: "MILHO VERDE, em Espiga", unidade: "Kg", convencional: 10.80, organico: 14.04 },
+        { produto: "MORANGO", unidade: "Kg", convencional: 29.62, organico: 38.51 },
+        { produto: "PEPINO, Comum/Japonês", unidade: "Kg", convencional: 6.98, organico: 9.07 },
+        { produto: "PIMENTÃO, Verde", unidade: "Kg", convencional: 9.45, organico: 12.29 },
+        { produto: "QUIABO", unidade: "Kg", convencional: 13.66, organico: 17.76 },
+        { produto: "RABANETE", unidade: "Kg", convencional: 10.55, organico: 13.72 },
+        { produto: "RAIZ DE MANDIOCA, com Casca", unidade: "Kg", convencional: 4.92, organico: 6.40 },
+        { produto: "REPOLHO, Verde", unidade: "Kg", convencional: 3.71, organico: 4.82 },
+        { produto: "REPOLHO, Roxo", unidade: "Kg", convencional: 7.26, organico: 9.44 },
+        { produto: "RÚCULA", unidade: "Kg", convencional: 19.34, organico: 25.14 },
+        { produto: "SALSA", unidade: "Kg", convencional: 18.98, organico: 24.67 },
+        { produto: "SALSÃO", unidade: "Kg", convencional: 15.09, organico: 19.62 },
+        { produto: "TANGERINA, Morgote/Ponkan", unidade: "Kg", convencional: 9.39, organico: 12.21 },
+        { produto: "TOMATE, Cereja", unidade: "Kg", convencional: 20.68, organico: 26.88 },
+        { produto: "TOMATE, Salada", unidade: "Kg", convencional: 8.76, organico: 11.39 },
+        { produto: "UVA", unidade: "Kg", convencional: 21.50, organico: 27.95 },
+        { produto: "VAGEM", unidade: "Kg", convencional: 17.67, organico: 22.97 },
+        { produto: "BEBIDA LÁCTEA", unidade: "L", convencional: 6.64, organico: 6.64 },
+        { produto: "BOLACHA, caseira de Polvilho", unidade: "Kg", convencional: 46.35, organico: 46.35 },
+        { produto: "BOLACHA, Enriquecida", unidade: "Kg", convencional: 24.00, organico: 24.00 },
+        { produto: "BOLACHA, Tipo Rosquinha", unidade: "Kg", convencional: 24.52, organico: 24.52 },
+        { produto: "CARNE, de Frango semi caipira", unidade: "Kg", convencional: 32.40, organico: 32.40 },
+        { produto: "CARNE, de Peixe / Catfish/ Surubim", unidade: "Kg", convencional: 30.90, organico: 30.90 },
+        { produto: "CARNE, de Peixe Pacu inteiro", unidade: "Kg", convencional: 28.20, organico: 28.20 },
+        { produto: "CARNE, de Peixe tilápia", unidade: "Kg", convencional: 38.47, organico: 38.47 },
+        { produto: "CARNE, Filé de tilápia", unidade: "Kg", convencional: 53.30, organico: 53.30 },
+        { produto: "DOCE, de Abóbora", unidade: "Kg", convencional: 25.66, organico: 25.66 },
+        { produto: "DOCE, de Frutas", unidade: "Kg", convencional: 28.45, organico: 28.45 },
+        { produto: "DOCE, de Leite", unidade: "Kg", convencional: 28.01, organico: 28.01 },
+        { produto: "FARINHA DE MANDIOCA", unidade: "Kg", convencional: 14.02, organico: 14.02 },
+        { produto: "FEIJÃO, Caupi", unidade: "Kg", convencional: 13.43, organico: 13.43 },
+        { produto: "FEIJÃO, Cores, Tipo 1", unidade: "Kg", convencional: 7.75, organico: 7.75 },
+        { produto: "IOGURTE", unidade: "L", convencional: 12.12, organico: 12.12 },
+        { produto: "LEITE, de vaca, líquido, integral, pasteurizado, tipo C", unidade: "L", convencional: 5.60, organico: 5.60 },
+        { produto: "MEL, de Abelha", unidade: "Kg", convencional: 46.17, organico: 46.17 },
+        { produto: "MELADO", unidade: "Kg", convencional: 26.90, organico: 26.90 },
+        { produto: "OVO, de galinha", unidade: "Dúzia", convencional: 12.33, organico: 12.33 },
+        { produto: "PÃO, de Trigo", unidade: "Kg", convencional: 20.61, organico: 20.61 },
+        { produto: "PÃO, Enriquecido", unidade: "Kg", convencional: 27.03, organico: 27.03 },
+        { produto: "POLPA DE FRUTAS, Caju", unidade: "Kg", convencional: 31.42, organico: 31.42 },
+        { produto: "POLPA DE FRUTAS, Maracujá", unidade: "Kg", convencional: 54.35, organico: 54.35 },
+        { produto: "QUEIJO, Colonial / Caipira", unidade: "Kg", convencional: 32.90, organico: 32.90 },
+        { produto: "QUEIJO Minas frescal", unidade: "Kg", convencional: 50.67, organico: 50.67 },
+        { produto: "QUEIJO, Mussarela", unidade: "Kg", convencional: 54.28, organico: 54.28 },
+        { produto: "QUEIJO Padrão", unidade: "Kg", convencional: 70.24, organico: 70.24 },
+        { produto: "RAPADURA, Enriquecida", unidade: "Kg", convencional: 24.74, organico: 24.74 },
+        { produto: "RAIZ DE MANDIOCA, Descascada", unidade: "Kg", convencional: 8.96, organico: 8.96 },
+        { produto: "RAPADURA, Pura de Cana", unidade: "Kg", convencional: 22.18, organico: 22.18 }
     ];
 
     let contadorProdutos = 0;
+
+    function toggleDeclarante() {
+        const checkbox = document.getElementById('declarante_terceiro');
+        const campo = document.getElementById('campo_declarante');
+        if (checkbox.checked) {
+            campo.classList.remove('hidden');
+        } else {
+            campo.classList.add('hidden');
+            document.getElementById('nome_declarante').value = '';
+        }
+    }
 
     function formatarDataAtual() {
         const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
@@ -292,6 +331,11 @@
         document.getElementById(`produto-${id}`).remove();
     }
 
+    function obterPreco(produto) {
+        const tipo = document.getElementById('tipo_preco').value;
+        return tipo === 'organico' ? produto.organico : produto.convencional;
+    }
+
     function atualizarDadosProduto(selectElement) {
         const index = selectElement.value;
         const divPai = selectElement.closest('.produto-item');
@@ -307,7 +351,7 @@
 
         const produto = tabelaPrecos[index];
         inputUnidade.value = produto.unidade;
-        inputPreco.value = produto.convencional.toFixed(2).replace('.', ',');
+        inputPreco.value = obterPreco(produto).toFixed(2).replace('.', ',');
         calcularTotal(inputQtd);
     }
 
@@ -321,9 +365,18 @@
         inputTotal.value = (qtd * preco).toFixed(2).replace('.', ',');
     }
 
-        function limparTudo() {
+    // Atualiza todos os preços quando o tipo de preço é alterado
+    document.getElementById('tipo_preco').addEventListener('change', function() {
+        document.querySelectorAll('.produto-item').forEach(item => {
+            const select = item.querySelector('.produto-select');
+            if (select.value !== "") {
+                atualizarDadosProduto(select);
+            }
+        });
+    });
+
+    function limparTudo() {
         if (confirm("Tem certeza que deseja limpar todos os dados preenchidos?")) {
-            // Limpa cada campo do formulário manualmente
             document.getElementById('nome').value = '';
             document.getElementById('cpf').value = '';
             document.getElementById('rg').value = '';
@@ -335,15 +388,16 @@
             document.getElementById('cep').value = '';
             document.getElementById('telefone').value = '';
             document.getElementById('inscricao_estadual').value = '';
+            document.getElementById('tipo_preco').value = 'convencional';
+            document.getElementById('declarante_terceiro').checked = false;
+            document.getElementById('nome_declarante').value = '';
+            document.getElementById('campo_declarante').classList.add('hidden');
             
-            // Limpa a lista de produtos
             document.getElementById('lista-produtos').innerHTML = '';
             contadorProdutos = 0;
             
-            // Volta para a tela do formulário
             voltarParaFormulario();
             
-            // Avisa o usuário
             alert("Todos os dados foram limpos com sucesso!");
         }
     }
@@ -366,10 +420,12 @@
             municipio: document.getElementById('municipio').value || "_________________________",
             cep: document.getElementById('cep').value || "_________________________",
             telefone: document.getElementById('telefone').value || "_________________________",
-            inscricao_estadual: document.getElementById('inscricao_estadual').value || "_________________________"
+            inscricao_estadual: document.getElementById('inscricao_estadual').value || "_________________________",
+            nome_declarante: document.getElementById('nome_declarante').value || "_________________________"
         };
 
         const dataAtual = formatarDataAtual();
+        const declaranteTerceiro = document.getElementById('declarante_terceiro').checked;
 
         const produtos = [];
         const itens = document.querySelectorAll('.produto-item');
@@ -395,6 +451,13 @@
         if (erro) return;
         if (produtos.length === 0) { alert("Adicione pelo menos um produto."); return; }
 
+        // Bloco de assinatura padrão (agricultor)
+        const assinaturaAgricultor = `
+            <div class="assinatura">
+                <div>Assinatura e Nome do agricultor(a): ${dados.nome}<br>Número do CPF: ${dados.cpf}</div>
+            </div>
+        `;
+
         let htmlAnexos = '';
 
         // ANEXO I
@@ -407,8 +470,8 @@
                 <p>Eu, <strong>${dados.nome}</strong>, nacionalidade brasileira, estado civil <strong>${dados.estado_civil}</strong>, Agricultor Familiar, portador(a) do RG/RANI n.º <strong>${dados.rg}</strong> e do CPF n.º <strong>${dados.cpf}</strong>, residente e domiciliado em <strong>${dados.endereco}, ${dados.municipio} - MS</strong>, DECLARO, para fins de participação no Chamamento Público de Credenciamento de Agricultores Familiares SEMADESC/PAA/CDS n.º 003/2026 para aquisição de gêneros alimentícios da agricultura familiar, no âmbito do Programa de Aquisição de Alimentos – Modalidade Compra com Doação Simultânea – com dispensa de licitação para doação a pessoas e famílias em situação de vulnerabilidade social, que os gêneros alimentícios relacionados na Proposta de Venda em meu nome são oriundos de produção própria.</p>
                 <p>Declaro, ainda, estar ciente de que as Notas Fiscais Eletrônicas de Produtor a serem emitidas pela minha Inscrição Estadual, destinam-se exclusivamente à comercialização de minha própria produção, sendo vedada a cessão a terceiros.</p>
                 <br>
-                <p style="text-align: center;">Município de ${dados.municipio}/MS, ${dataAtual}.</p>
-                <div class="assinatura"><div>Assinatura e Nome do agricultor(a)<br>Número do CPF</div></div>
+                <p style="text-align: center;">Município de <strong>${dados.municipio}</strong>/MS, ${dataAtual}.</p>
+                ${assinaturaAgricultor}
             </div>
         `;
 
@@ -420,8 +483,8 @@
                 <br>
                 <p>Eu, <strong>${dados.nome}</strong>, nacionalidade brasileira, Agricultor(a) Familiar, portador(a) do CPF n.º <strong>${dados.cpf}</strong>, residente e domiciliado (a) na área rural, denominada <strong>${dados.endereco}, ${dados.municipio} - MS</strong>, para fins de participação no Chamamento Público de Credenciamento de Agricultores Familiares SEMADESC n.º 003/2026 para aquisição de gêneros alimentícios da agricultura familiar, no âmbito do Programa de Aquisição de Alimentos – Modalidade Compra com Doação Simultânea – com dispensa de licitação, DECLARO que me responsabilizarei pelo controle do limite individual de venda anual de gêneros alimentícios, em até no valor de R$ 15.000,00 (quinze mil reais) por unidade familiar/CAF/modalidade PAA-CDS Termo de adesão, conforme Resolução GGPAA nº 3, de 5 de setembro de 2023 e demais normativos, no que couber.</p>
                 <br>
-                <p style="text-align: center;">Município de ${dados.municipio}/MS, ${dataAtual}.</p>
-                <div class="assinatura"><div>Assinatura e Nome do agricultor(a)<br>Número do CPF</div></div>
+                <p style="text-align: center;">Município de <strong>${dados.municipio}</strong>/MS, ${dataAtual}.</p>
+                ${assinaturaAgricultor}
             </div>
         `;
 
@@ -438,7 +501,7 @@
                 <p>Edital de Chamamento Público SEMADESC/PAA/CDS nº 003/2026.</p>
                 <p>Proposta nº: 02636-DS-05860-2026-5000000- PAA/CDS.</p>
                 <br>
-                                <h4>I – IDENTIFICAÇÃO DO FORNECEDOR</h4>
+                <h4>I – IDENTIFICAÇÃO DO FORNECEDOR</h4>
                 <p>1. Nome do agricultor/a: <strong>${dados.nome}</strong></p>
                 <p>2. CPF: <strong>${dados.cpf}</strong> | 3. Nº da DAP/CAF: <strong>${dados.dap}</strong> | 4. Nº NIS: <strong>${dados.nis}</strong></p>
                 <p>5. Endereço: <strong>${dados.endereco}</strong></p>
@@ -451,19 +514,46 @@
                     <tbody>${linhasProdutos}</tbody>
                 </table>
                 <br>
-                <p style="text-align: center;">Município de ${dados.municipio}/MS, ${dataAtual}.</p>
-                <div class="assinatura"><div>Assinatura e Nome do agricultor(a)<br>Número do CPF</div></div>
+                <p style="text-align: center;">Município de <strong>${dados.municipio}</strong>/MS, ${dataAtual}.</p>
+                ${assinaturaAgricultor}
             </div>
         `;
 
-        // ANEXO V
+        // ANEXO V - Declaração de Residência (com 2 assinaturas)
+        let blocoDeclarante = '';
+        let blocoAssinaturaDeclarante = '';
+        let blocoAssinaturaAgricultor = '';
+
+        if (declaranteTerceiro) {
+            blocoDeclarante = `<strong>${dados.nome_declarante}</strong>, portador(a) do RG/RANI nº __________________, inscrito(a) no CPF/CNPJ sob o nº __________________, residente e domiciliado em __________________`;
+            blocoAssinaturaDeclarante = `
+                <div class="assinatura">
+                    <div>Assinatura e Nome do Declarante: ${dados.nome_declarante}<br>Número do CPF: __________________</div>
+                </div>
+            `;
+        } else {
+            blocoDeclarante = `<strong>${dados.nome}</strong>, portador(a) do RG/RANI nº <strong>${dados.rg}</strong>, inscrito(a) no CPF/CNPJ sob o nº <strong>${dados.cpf}</strong>, residente e domiciliado em <strong>${dados.endereco}, ${dados.municipio} - MS</strong>`;
+            blocoAssinaturaDeclarante = `
+                <div class="assinatura">
+                    <div>Assinatura e Nome do Declarante: ${dados.nome}<br>Número do CPF: ${dados.cpf}</div>
+                </div>
+            `;
+        }
+
+        blocoAssinaturaAgricultor = `
+            <div class="assinatura">
+                <div>Assinatura e Nome do agricultor(a): ${dados.nome}<br>Número do CPF: ${dados.cpf}</div>
+            </div>
+        `;
+
         htmlAnexos += `
             <div class="anexo">
                 <h3>ANEXO V – DECLARAÇÃO DE RESIDÊNCIA</h3>
-                <p>Eu, <strong>${dados.nome}</strong>, portador(a) do RG/RANI nº <strong>${dados.rg}</strong>, inscrito(a) no CPF/CNPJ sob o nº <strong>${dados.cpf}</strong>, residente e domiciliado em <strong>${dados.endereco}, ${dados.municipio} - MS</strong>, DECLARO, para fins de participação no CHAMAMENTO PÚBLICO DA SEMADESC PAA/CDS Nº 003/2026, para aquisição de gêneros alimentícios da agricultura familiar, no âmbito do Programa de Aquisição de Alimentos – Modalidade Compra com Doação Simultânea – com dispensa de licitação, para doação a pessoas e famílias em situação de vulnerabilidade social, sob as penas da lei (Art. 299 do Código Penal Brasileiro e Lei nº 7.115/1983), que o(a) Sr.(a) <strong>${dados.nome}</strong>, inscrito no CPF sob o nº <strong>${dados.cpf}</strong>, detentor da Inscrição Estadual nº <strong>${dados.inscricao_estadual}</strong> e DAP/CAF ou NIS nº <strong>${dados.dap}</strong>, reside de forma efetiva e contínua no endereço, <strong>${dados.endereco}, ${dados.municipio} - MS</strong>, conforme comprovante em meu nome.</p>
+                <p>Eu, ${blocoDeclarante}, DECLARO, para fins de participação no CHAMAMENTO PÚBLICO DA SEMADESC PAA/CDS Nº 003/2026, para aquisição de gêneros alimentícios da agricultura familiar, no âmbito do Programa de Aquisição de Alimentos – Modalidade Compra com Doação Simultânea – com dispensa de licitação, para doação a pessoas e famílias em situação de vulnerabilidade social, sob as penas da lei (Art. 299 do Código Penal Brasileiro e Lei nº 7.115/1983), que o(a) Sr.(a) <strong>${dados.nome}</strong>, inscrito no CPF sob o nº <strong>${dados.cpf}</strong>, detentor da Inscrição Estadual nº <strong>${dados.inscricao_estadual}</strong> e DAP/CAF ou NIS nº <strong>${dados.dap}</strong>, reside de forma efetiva e contínua no endereço, <strong>${dados.endereco}, ${dados.municipio} - MS</strong>, conforme comprovante em meu nome.</p>
                 <br>
-                <p style="text-align: center;">Município de ${dados.municipio}/MS, ${dataAtual}.</p>
-                <div class="assinatura"><div>Assinatura e Nome do Declarante<br>Número do CPF</div></div>
+                <p style="text-align: center;">Município de <strong>${dados.municipio}</strong>/MS, ${dataAtual}.</p>
+                ${blocoAssinaturaDeclarante}
+                ${blocoAssinaturaAgricultor}
             </div>
         `;
 
