@@ -429,4 +429,52 @@
                 <h4>I – IDENTIFICAÇÃO DO FORNECEDOR</h4>
                 <p>1. Nome do agricultor/a: <strong>${dados.nome}</strong></p>
                 <p>2. CPF: <strong>${dados.cpf}</strong> | 3. Nº da DAP/CAF: <strong>${dados.dap}</strong> | 4. Nº NIS: <strong>${dados.nis}</strong></p>
-                <p>5. Endereço: <strong>${dados.endereco}</strong> | 6. Município: <strong>${dados.municipio}</strong> | 7. CEP: <strong>
+                <p>5. Endereço: <strong>${dados.endereco}</strong> | 6. Município: <strong>${dados.municipio}</strong> | 7. CEP: <strong>${dados.cep}</strong> | 8. DDD/Fone: <strong>${dados.telefone}</strong></p>
+                <br>
+                <h4>II – PRODUTO</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>1. Produto</th>
+                            <th>2. Unidade</th>
+                            <th>3. Quantidade</th>
+                            <th>4. Preço</th>
+                            <th>5. Total</th>
+                            <th>6. Periodicidade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${linhasProdutos}
+                    </tbody>
+                </table>
+                <br>
+                <p style="text-align: center;">Município de ${dados.municipio}/MS, _____ de _____________ de 2026.</p>
+                <div class="assinatura">
+                    <div>Assinatura e Nome do agricultor(a)<br>Número do CPF</div>
+                </div>
+            </div>
+        `;
+
+        // --- ANEXO V ---
+        htmlAnexos += `
+            <div class="anexo">
+                <h3>ANEXO V – DECLARAÇÃO DE RESIDÊNCIA</h3>
+                <p>Eu, <strong>${dados.nome}</strong>, portador(a) do RG/RANI nº <strong>${dados.rg}</strong>, inscrito(a) no CPF/CNPJ sob o nº <strong>${dados.cpf}</strong>, residente e domiciliado em <strong>${dados.endereco}, ${dados.municipio} - MS</strong>, DECLARO, para fins de participação no CHAMAMENTO PÚBLICO DA SEMADESC PAA/CDS Nº 003/2026, para aquisição de gêneros alimentícios da agricultura familiar, no âmbito do Programa de Aquisição de Alimentos – Modalidade Compra com Doação Simultânea – com dispensa de licitação, para doação a pessoas e famílias em situação de vulnerabilidade social, sob as penas da lei (Art. 299 do Código Penal Brasileiro e Lei nº 7.115/1983), que o(a) Sr.(a) <strong>${dados.nome}</strong>, inscrito no CPF sob o nº <strong>${dados.cpf}</strong>, detentor da Inscrição Estadual nº <strong>${dados.inscricao_estadual}</strong> e DAP/CAF ou NIS nº <strong>${dados.dap}</strong>, reside de forma efetiva e contínua no endereço, <strong>${dados.endereco}, ${dados.municipio} - MS</strong>, conforme comprovante em meu nome.</p>
+                <br>
+                <p style="text-align: center;">Município de ${dados.municipio}/MS, _____ de _____________ de 2026.</p>
+                <div class="assinatura">
+                    <div>Assinatura e Nome do Declarante<br>Número do CPF</div>
+                </div>
+            </div>
+        `;
+
+        const areaImpressao = document.getElementById('area-impressao');
+        areaImpressao.innerHTML = htmlAnexos;
+        areaImpressao.classList.remove('hidden');
+        document.getElementById('formulario').classList.add('hidden'); 
+        
+        areaImpressao.scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
+</body>
+</html>
