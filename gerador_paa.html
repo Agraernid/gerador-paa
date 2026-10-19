@@ -563,13 +563,13 @@
         let blocoAssinaturaDeclarante = '';
         let blocoAssinaturaAgricultor = '';
 
-                       let inscricaoEstadualParaDeclaracao = '';
+        let inscricaoEstadualParaDeclaracao = '';
         
         if (declaranteTerceiro) {
             blocoDeclarante = `<strong>${dados.nome_declarante}</strong>, portador(a) do RG/RANI nº <strong>${dados.rg_declarante}</strong>, inscrito(a) no CPF/CNPJ sob o nº <strong>${dados.cpf_declarante}</strong>, residente e domiciliado em <strong>${dados.endereco_declarante}</strong>`;
             blocoAssinaturaDeclarante = `
                 <div class="assinatura">
-                    <div>Assinatura do Declarante: ${dados.nome_declarante}<br>CPF: ${dados.cpf_declarante}</div>
+                    <div>${dados.nome_declarante}<br>${dados.cpf_declarante}</div>
                 </div>
             `;
             inscricaoEstadualParaDeclaracao = dados.inscricao_estadual_declarante;
@@ -577,7 +577,7 @@
             blocoDeclarante = `<strong>${dados.nome}</strong>, portador(a) do RG/RANI nº <strong>${dados.rg}</strong>, inscrito(a) no CPF/CNPJ sob o nº <strong>${dados.cpf}</strong>, residente e domiciliado em <strong>${dados.endereco}, ${dados.municipio} - MS</strong>`;
             blocoAssinaturaDeclarante = `
                 <div class="assinatura">
-                    <div>Assinatura do Declarante: ${dados.nome}<br>CPF: ${dados.cpf}</div>
+                    <div>${dados.nome}<br>${dados.cpf}</div>
                 </div>
             `;
             inscricaoEstadualParaDeclaracao = "_________________";
@@ -585,7 +585,7 @@
 
         blocoAssinaturaAgricultor = `
             <div class="assinatura">
-                <div>Assinatura do agricultor(a): ${dados.nome}<br>CPF: ${dados.cpf}</div>
+                <div>${dados.nome}<br>${dados.cpf}</div>
             </div>
         `;
 
@@ -605,6 +605,3 @@
         document.getElementById('formulario').classList.add('hidden'); 
         window.scrollTo(0, 0);
     }
-</script>
-</body>
-</html>
