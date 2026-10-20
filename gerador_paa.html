@@ -300,7 +300,7 @@
 
     let contadorProdutos = 0;
 
-        function toggleDeclarante() {
+    function toggleDeclarante() {
         const checkbox = document.getElementById('declarante_terceiro');
         const campo = document.getElementById('campo_declarante');
         if (checkbox.checked) {
@@ -385,7 +385,6 @@
         inputTotal.value = (qtd * preco).toFixed(2).replace('.', ',');
     }
 
-    // Atualiza todos os preços quando o tipo de preço é alterado
     document.getElementById('tipo_preco').addEventListener('change', function() {
         document.querySelectorAll('.produto-item').forEach(item => {
             const select = item.querySelector('.produto-select');
@@ -477,7 +476,6 @@
         if (erro) return;
         if (produtos.length === 0) { alert("Adicione pelo menos um produto."); return; }
 
-        // Bloco de assinatura padrão (agricultor)
         const assinaturaAgricultor = `
             <div class="assinatura">
                 <div>${dados.nome}<br>${dados.cpf}</div>
@@ -514,18 +512,17 @@
             </div>
         `;
 
-                // ANEXO III
+        // ANEXO III
         let linhasProdutos = '';
         let somaTotal = 0;
         produtos.forEach(p => {
-            // Converte o preço formatado (ex: "9,17") para número
             const totalNum = parseFloat(p.total.replace(/\./g, '').replace(',', '.'));
             somaTotal += totalNum;
             linhasProdutos += `<tr><td>${p.nome}</td><td>${p.unidade}</td><td>${p.quantidade}</td><td>R$ ${p.preco}</td><td>R$ ${p.total}</td><td>${p.periodicidade}</td></tr>`;
         });
 
-        // Formata o total geral como moeda brasileira
         const totalGeralFormatado = somaTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
         htmlAnexos += `
             <div class="anexo">
                 <h3>ANEXO III – PROJETO DE VENDA</h3>
@@ -541,7 +538,7 @@
                 <p>8. DDD/Fone: <strong>${dados.telefone}</strong></p>
                 <br>
                 <h4>II – PRODUTO</h4>
-                                <table>
+                <table>
                     <thead><tr><th>1. Produto</th><th>2. Unidade</th><th>3. Quantidade</th><th>4. Preço</th><th>5. Total</th><th>6. Periodicidade</th></tr></thead>
                     <tbody>
                         ${linhasProdutos}
@@ -558,11 +555,10 @@
             </div>
         `;
 
-        // ANEXO V - Declaração de Residência (com 2 assinaturas)
+        // ANEXO V
         let blocoDeclarante = '';
         let blocoAssinaturaDeclarante = '';
         let blocoAssinaturaAgricultor = '';
-
         let inscricaoEstadualParaDeclaracao = '';
         
         if (declaranteTerceiro) {
@@ -605,3 +601,6 @@
         document.getElementById('formulario').classList.add('hidden'); 
         window.scrollTo(0, 0);
     }
+</script>
+</body>
+</html>
